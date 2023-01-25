@@ -1,54 +1,31 @@
+import AddNewTask from './components/AddNewTask';
+import TaskList from './components/TaskList';
+
 import { useEffect, useState } from 'react';
+import { v4 } from 'uuid';
+
 import './App.css';
 
 // ----------------------------------------------------------------------
 
 const tasks = [
-  { title: 'Buy bread' },
-  { title: 'Learn React' },
-  { title: 'Go to the movies' },
-  { title: 'Clean the house' },
-  { title: 'Play Dark Souls for 20 hours' },
-  { title: 'Feed the dog' },
-  { title: 'Go to my best friend birthday' },
-  { title: 'Fix the toilet' },
-  { title: 'Go running' },
-  { title: 'Return The Lord of the Rings to the public library' },
+  { id: v4(), title: 'Buy bread' },
+  { id: v4(), title: 'Learn React' },
+  { id: v4(), title: 'Go to the movies' },
+  { id: v4(), title: 'Clean the house' },
+  { id: v4(), title: 'Play Dark Souls for 20 hours' },
+  { id: v4(), title: 'Feed the dog' },
+  { id: v4(), title: 'Go to my best friend birthday' },
+  { id: v4(), title: 'Fix the toilet' },
+  { id: v4(), title: 'Go running' },
+  {
+    id: v4(),
+    title: 'Return The Lord of the Rings to the public library',
+    isCompleted: false,
+  },
 ];
 
 // ----------------------------------------------------------------------
-
-export function AddNewTask({ handleChange, handleSubmit }) {
-  return (
-    <>
-      <form onSubmit={(e) => handleSubmit(e)}>
-        <input
-          name="title"
-          type="text"
-          placeholder="What do you want to achieve?"
-          onChange={(e) => handleChange(e)}
-        />
-        <input type="submit" value="Submit" />
-      </form>
-    </>
-  );
-}
-
-// ----------------------------------------------------------------------
-
-export function TaskList({ taskList }) {
-  // No unique ID in the initial task list, we will use the data position in array (id) instead. May cause some bugs when adding a Delete Task feature
-  if (taskList.length === 0) return 'No task';
-  return (
-    <>
-      {taskList.map((task, id) => (
-        <ul key={id}>
-          <li>{task.title}</li>
-        </ul>
-      ))}
-    </>
-  );
-}
 
 // ----------------------------------------------------------------------
 
@@ -57,21 +34,29 @@ export default function App() {
   const [task, setTask] = useState({});
 
   useEffect(() => {
-    // Load data once DOM is loaded
     setTaskList(tasks);
   }, []);
 
   function handleChange(e) {
-    // Anticipation for a more complexe form, we update the task object based on its names and values
-    // We don't check for empty input for now (not asked)
     const { name, value } = e.target;
-    setTask({ ...task, [name]: value });
+    const newId = v4();
+    setTask({ ...task, id: newId, [name]: value });
   }
 
   function handleSubmit(e) {
     e.preventDefault();
-    setTaskList([...taskList, task]); // Update the task list when the form is submitted.
+
+    if (!task) return;
+
+    setTaskList([...taskList, task]);
     e.target.reset();
+    setTask({});
+  }
+
+  function handleDelete(id) {
+    const filteredList = taskList.filter((task) => task.id !== id);
+
+    setTaskList(filteredList);
   }
 
   return (
@@ -84,8 +69,8 @@ export default function App() {
         <AddNewTask handleChange={handleChange} handleSubmit={handleSubmit} />
       </div>
       <div>
-        <h2>To do list</h2>
-        <TaskList taskList={taskList} />
+        <h2>Pending tasks</h2>
+        <TaskList taskList={taskList} handleDelete={handleDelete} />
       </div>
     </>
   );

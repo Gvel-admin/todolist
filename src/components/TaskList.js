@@ -1,7 +1,13 @@
-export default function TaskList({ taskList, handleDelete, handleUpdate }) {
-  const tableHeaders = ['Title', 'Delete'];
+export default function TaskList({
+  taskList,
+  handleDelete,
+  handleUpdate,
+  isCompleted,
+}) {
+  const tableHeaders = ['Title', 'Complete', 'Delete'];
 
   if (taskList.length === 0) return 'No task';
+
   return (
     <>
       <table>
@@ -13,14 +19,33 @@ export default function TaskList({ taskList, handleDelete, handleUpdate }) {
           </tr>
         </thead>
         <tbody>
-          {taskList.map((task) => (
-            <tr key={task.id}>
-              <td>{task.title}</td>
-              <td>
-                <button onClick={() => handleDelete(task.id)}>x</button>
-              </td>
-            </tr>
-          ))}
+          {taskList
+            .filter((task) => task.isCompleted === isCompleted)
+            .map((task) => {
+              const { id, title, isCompleted } = task;
+              return (
+                <tr key={id}>
+                  <td style={{ cursor: 'auto' }}>{title}</td>
+                  <td style={{ textAlign: 'center' }}>
+                    <input
+                      type="checkbox"
+                      name="isComplete"
+                      checked={isCompleted}
+                      onChange={() => handleUpdate(id)}
+                      style={{ cursor: 'pointer' }}
+                    />
+                  </td>
+                  <td style={{ textAlign: 'center' }}>
+                    <button
+                      onClick={() => handleDelete(id)}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      x
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
         </tbody>
       </table>
     </>

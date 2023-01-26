@@ -9,15 +9,15 @@ import './App.css';
 // ----------------------------------------------------------------------
 
 const tasks = [
-  { id: v4(), title: 'Buy bread' },
-  { id: v4(), title: 'Learn React' },
-  { id: v4(), title: 'Go to the movies' },
-  { id: v4(), title: 'Clean the house' },
-  { id: v4(), title: 'Play Dark Souls for 20 hours' },
-  { id: v4(), title: 'Feed the dog' },
-  { id: v4(), title: 'Go to my best friend birthday' },
-  { id: v4(), title: 'Fix the toilet' },
-  { id: v4(), title: 'Go running' },
+  { id: v4(), title: 'Buy bread', isCompleted: false },
+  { id: v4(), title: 'Learn React', isCompleted: false },
+  { id: v4(), title: 'Go to the movies', isCompleted: false },
+  { id: v4(), title: 'Clean the house', isCompleted: false },
+  { id: v4(), title: 'Play Dark Souls for 20 hours', isCompleted: true },
+  { id: v4(), title: 'Feed the dog', isCompleted: true },
+  { id: v4(), title: 'Go to my best friend birthday', isCompleted: false },
+  { id: v4(), title: 'Fix the toilet', isCompleted: false },
+  { id: v4(), title: 'Go running', isCompleted: false },
   {
     id: v4(),
     title: 'Return The Lord of the Rings to the public library',
@@ -59,6 +59,14 @@ export default function App() {
     setTaskList(filteredList);
   }
 
+  function handleUpdate(id) {
+    const updatedTask = taskList.find((task) => task.id === id);
+    const updatedStatus = !updatedTask.isCompleted;
+    updatedTask.isCompleted = updatedStatus;
+
+    setTaskList([...taskList]);
+  }
+
   return (
     <>
       <div>
@@ -70,7 +78,21 @@ export default function App() {
       </div>
       <div>
         <h2>Pending tasks</h2>
-        <TaskList taskList={taskList} handleDelete={handleDelete} />
+        <TaskList
+          taskList={taskList}
+          isCompleted={false}
+          handleDelete={handleDelete}
+          handleUpdate={handleUpdate}
+        />
+      </div>
+      <div>
+        <h2>Completed tasks</h2>
+        <TaskList
+          taskList={taskList}
+          isCompleted={true}
+          handleDelete={handleDelete}
+          handleUpdate={handleUpdate}
+        />
       </div>
     </>
   );

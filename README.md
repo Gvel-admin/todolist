@@ -2,13 +2,13 @@
 
 ## Main functionality
 
-- Show the following list of tasks
-- Possibility to add new tasks to the list
+Show the following list of tasks ✔️
+✔️ Possibility to add new tasks to the list ✔️
 
 ## Extra tasks
 
-- Remove tasks: tasks can be removed from the list
-- Second list: completed tasks. Somehow it must be possible to mark tasks as completed and store them in this list
+- Remove tasks: tasks can be removed from the list ✔️
+- Second list: completed tasks. Somehow it must be possible to mark tasks as completed and store them in this list ✔️
 - Add importance to the task: while adding a task, you can select the priority or importance of the task and show it in the list (different color, first in the list, etc...)
 - Add a date to the task: if the date is between the date it was added and today, it should appear as finished. If not, pending.
 - Task filter: be able to filter by name (or other property if you added dates for example)
@@ -35,5 +35,3 @@ tasks = [
 {title: "Go running"},
 {title: "Return The Lord of the Rings to the public library}
 ]
-
-## Questions

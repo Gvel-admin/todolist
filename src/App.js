@@ -1,42 +1,90 @@
 import AddNewTask from './components/AddNewTask';
 import TaskList from './components/TaskList';
-
+// ----------------------------------------------------------------------
 import { useEffect, useState } from 'react';
+import {
+  generateRandomBoolean,
+  generateRandomDate,
+  generateRandomPriority,
+} from './helpers/randomGenerators';
 import { v4 } from 'uuid';
-
+// ----------------------------------------------------------------------
 import './App.css';
 
 // ----------------------------------------------------------------------
 
 const tasks = [
-  { id: v4(), title: 'Buy bread', priority: 1, isCompleted: false },
-  { id: v4(), title: 'Learn React', priority: 2, isCompleted: false },
-  { id: v4(), title: 'Go to the movies', priority: 3, isCompleted: false },
-  { id: v4(), title: 'Clean the house', priority: 2, isCompleted: false },
+  {
+    id: v4(),
+    title: 'Buy bread',
+    priority: generateRandomPriority(),
+    creationDate: generateRandomDate(),
+    isCompleted: generateRandomBoolean(),
+  },
+  {
+    id: v4(),
+    title: 'Learn React',
+    priority: generateRandomPriority(),
+    creationDate: generateRandomDate(),
+    isCompleted: generateRandomBoolean(),
+  },
+  {
+    id: v4(),
+    title: 'Go to the movies',
+    priority: generateRandomPriority(),
+    creationDate: generateRandomDate(),
+    isCompleted: generateRandomBoolean(),
+  },
+  {
+    id: v4(),
+    title: 'Clean the house',
+    priority: generateRandomPriority(),
+    creationDate: generateRandomDate(),
+    isCompleted: generateRandomBoolean(),
+  },
   {
     id: v4(),
     title: 'Play Dark Souls for 20 hours',
-    priority: 3,
-    isCompleted: true,
+    priority: generateRandomPriority(),
+    creationDate: generateRandomDate(),
+    isCompleted: generateRandomBoolean(),
   },
-  { id: v4(), title: 'Feed the dog', priority: 1, isCompleted: true },
+  {
+    id: v4(),
+    title: 'Feed the dog',
+    priority: generateRandomPriority(),
+    creationDate: generateRandomDate(),
+    isCompleted: generateRandomBoolean(),
+  },
   {
     id: v4(),
     title: 'Go to my best friend birthday',
-    priority: 3,
-    isCompleted: false,
+    priority: generateRandomPriority(),
+    creationDate: generateRandomDate(),
+    isCompleted: generateRandomBoolean(),
   },
-  { id: v4(), title: 'Fix the toilet', priority: 1, isCompleted: false },
-  { id: v4(), title: 'Go running', priority: 3, isCompleted: false },
+  {
+    id: v4(),
+    title: 'Fix the toilet',
+    priority: generateRandomPriority(),
+    creationDate: generateRandomDate(),
+    isCompleted: generateRandomBoolean(),
+  },
+  {
+    id: v4(),
+    title: 'Go running',
+    priority: generateRandomPriority(),
+    creationDate: generateRandomDate(),
+    isCompleted: generateRandomBoolean(),
+  },
   {
     id: v4(),
     title: 'Return The Lord of the Rings to the public library',
-    priority: 2,
-    isCompleted: false,
+    priority: generateRandomPriority(),
+    creationDate: generateRandomDate(),
+    isCompleted: generateRandomBoolean(),
   },
 ];
-
-// ----------------------------------------------------------------------
 
 // ----------------------------------------------------------------------
 
@@ -69,8 +117,9 @@ export default function App() {
     e.preventDefault();
 
     const defaultStatus = false; //set a default task status
-    const newTask = { ...task, isCompleted: defaultStatus };
-
+    const creationDate = new Date().toISOString();
+    const newTask = { ...task, isCompleted: defaultStatus, creationDate };
+    //console.log(newTask);
     setTaskList([...taskList, newTask]);
 
     //Reset form

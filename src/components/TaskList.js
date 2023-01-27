@@ -1,10 +1,20 @@
+import { formatDate } from '../helpers/formaters';
+// ----------------------------------------------------------------------
+
 export default function TaskList({
   taskList,
   handleDelete,
   handleUpdate,
   isCompleted,
 }) {
-  const tableHeaders = ['Title', 'Priority', 'Complete', 'Delete'];
+  const tableHeaders = [
+    'Title',
+    'Priority',
+    'Creation date',
+    'Lateness',
+    'Complete',
+    'Delete',
+  ];
 
   function getPriority(priorityId) {
     // convert the priority lvl (integer) to string
@@ -25,6 +35,14 @@ export default function TaskList({
     return returnedStatus;
   }
 
+  function getLateness(creationDate) {
+    const todayToMS = new Date().getTime();
+    const creationDateToMS = new Date(creationDate).getTime();
+
+    if (creationDateToMS <= todayToMS) return 'Pending';
+    if (creationDateToMS > todayToMS) return 'Finished';
+  }
+
   if (taskList.length === 0) return 'No task';
 
   return (
@@ -39,11 +57,10 @@ export default function TaskList({
         </thead>
         <tbody>
           {taskList
-            //list.sort((a, b) => a.priority - b.priority);
             .sort((a, b) => a.priority - b.priority)
             .filter((task) => task.isCompleted === isCompleted)
             .map((task) => {
-              const { id, title, priority, isCompleted } = task;
+              const { id, title, priority, isCompleted, creationDate } = task;
               return (
                 <tr key={id}>
                   <td style={{ cursor: 'auto' }}>{title}</td>
@@ -56,6 +73,8 @@ export default function TaskList({
                       {getPriority(priority)}
                     </span>
                   </td>
+                  <td>{formatDate(creationDate)}</td>
+                  <td>{getLateness(creationDate)}</td>
                   <td>
                     <input
                       type="checkbox"

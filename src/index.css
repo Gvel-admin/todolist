@@ -11,3 +11,35 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+th:first-of-type {
+  text-align: left;
+}
+
+td:first-child {
+  text-align: left;
+}
+
+td:not:first-of-type {
+  text-align: center;
+}
+
+td span.priority {
+  background-color: black;
+  color: white;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+}
+
+span.priority.priority-high {
+  background-color: red;
+}
+
+span.priority.priority-medium {
+  background-color: orange;
+}
+
+span.priority.priority-low {
+  background-color: grey;
+}

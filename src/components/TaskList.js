@@ -1,49 +1,43 @@
+import { useMemo } from 'react';
+import { convertDateToMS } from '../helpers/datesHandlers';
 import { formatDate } from '../helpers/formaters';
+
 // ----------------------------------------------------------------------
 
-export default function TaskList({
-  taskList,
-  handleDelete,
-  handleUpdate,
-  isCompleted,
-}) {
-  const tableHeaders = [
-    'Title',
-    'Priority',
-    'Creation date',
-    'Lateness',
-    'Complete',
-    'Delete',
-  ];
+const priorityMap = {
+  1: 'High',
+  2: 'Medium',
+  3: 'Low',
+};
 
-  function getPriority(priorityId) {
-    // convert the priority lvl (integer) to string
-    let returnedStatus;
-    switch (priorityId) {
-      case 1:
-        returnedStatus = 'High';
-        break;
-      case 2:
-        returnedStatus = 'Medium';
-        break;
-      case 3:
-        returnedStatus = 'Low';
-        break;
-      default:
-        returnedStatus = '-';
-    }
-    return returnedStatus;
-  }
+const tableHeaders = [
+  'Title',
+  'Priority',
+  'Creation date',
+  'Lateness',
+  'Complete',
+  'Delete',
+];
 
-  function getLateness(creationDate) {
-    const todayToMS = new Date().getTime();
-    const creationDateToMS = new Date(creationDate).getTime();
+export default function TaskList(props) {
+  const { taskList, deleteSelectedTask, updateSelectedTask, isCompleted } =
+    props;
 
-    if (creationDateToMS <= todayToMS) return 'Pending';
-    if (creationDateToMS > todayToMS) return 'Finished';
-  }
+  const getPriority = (priorityId) => priorityMap[priorityId] || '-';
 
-  if (taskList.length === 0) return 'No task';
+  const getLateness = useMemo(
+    () => (creationDate) => {
+      const todayToMS = convertDateToMS();
+      const creationDateToMS = convertDateToMS(creationDate);
+
+      return creationDateToMS <= todayToMS ? 'Pending' : 'Finished';
+    },
+    []
+  );
+
+  const dedicatedTaskList = taskList
+    .filter((task) => task.isCompleted === isCompleted)
+    .sort((a, b) => a.priority - b.priority);
 
   return (
     <>
@@ -56,10 +50,8 @@ export default function TaskList({
           </tr>
         </thead>
         <tbody>
-          {taskList
-            .sort((a, b) => a.priority - b.priority)
-            .filter((task) => task.isCompleted === isCompleted)
-            .map((task) => {
+          {dedicatedTaskList.length > 0 ? (
+            dedicatedTaskList.map((task) => {
               const { id, title, priority, isCompleted, creationDate } = task;
               return (
                 <tr key={id}>
@@ -80,13 +72,13 @@ export default function TaskList({
                       type="checkbox"
                       name="isComplete"
                       checked={isCompleted}
-                      onChange={() => handleUpdate(id)}
+                      onChange={() => updateSelectedTask(id)}
                       style={{ cursor: 'pointer' }}
                     />
                   </td>
                   <td>
                     <button
-                      onClick={() => handleDelete(id)}
+                      onClick={() => deleteSelectedTask(id)}
                       style={{ cursor: 'pointer' }}
                     >
                       x
@@ -94,7 +86,12 @@ export default function TaskList({
                   </td>
                 </tr>
               );
-            })}
+            })
+          ) : (
+            <tr>
+              <td>No task</td>
+            </tr>
+          )}
         </tbody>
       </table>
     </>

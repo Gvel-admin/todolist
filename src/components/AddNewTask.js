@@ -1,5 +1,5 @@
-export default function AddNewTask({ handleChange, handleSubmit }) {
-  const taskPriorities = [
+export default function AddNewTask({ updateTaskState, submitNewTask }) {
+  const priorityOptions = [
     { level: 'Select a priority', value: '' },
     { level: 'low', value: 3 },
     { level: 'medium', value: 2 },
@@ -8,16 +8,16 @@ export default function AddNewTask({ handleChange, handleSubmit }) {
 
   return (
     <>
-      <form onSubmit={(e) => handleSubmit(e)}>
+      <form onSubmit={(e) => submitNewTask(e)}>
         <input
           name="title"
           type="text"
           placeholder="What do you want to achieve?"
-          onChange={(e) => handleChange(e)}
+          onChange={(e) => updateTaskState(e)}
           required
         />
-        <select name="priority" onChange={(e) => handleChange(e)} required>
-          {taskPriorities.map((priority) => (
+        <select name="priority" onChange={(e) => updateTaskState(e)} required>
+          {priorityOptions.map((priority) => (
             <option key={priority.value} value={priority.value}>
               {priority.level}
             </option>

@@ -1,171 +1,187 @@
+//Components
 import AddNewTask from './components/AddNewTask';
 import TaskList from './components/TaskList';
+import Filter from './components/Filter';
 // ----------------------------------------------------------------------
+//Data
+import { generateTasks } from './data/tasks';
+import { filters } from './data/filters';
+// ----------------------------------------------------------------------
+//Functions
 import { useEffect, useState } from 'react';
-import {
-  generateRandomBoolean,
-  generateRandomDate,
-  generateRandomPriority,
-} from './helpers/randomGenerators';
 import { v4 } from 'uuid';
-// ----------------------------------------------------------------------
-import './App.css';
-
-// ----------------------------------------------------------------------
-
-const tasks = [
-  {
-    id: v4(),
-    title: 'Buy bread',
-    priority: generateRandomPriority(),
-    creationDate: generateRandomDate(),
-    isCompleted: generateRandomBoolean(),
-  },
-  {
-    id: v4(),
-    title: 'Learn React',
-    priority: generateRandomPriority(),
-    creationDate: generateRandomDate(),
-    isCompleted: generateRandomBoolean(),
-  },
-  {
-    id: v4(),
-    title: 'Go to the movies',
-    priority: generateRandomPriority(),
-    creationDate: generateRandomDate(),
-    isCompleted: generateRandomBoolean(),
-  },
-  {
-    id: v4(),
-    title: 'Clean the house',
-    priority: generateRandomPriority(),
-    creationDate: generateRandomDate(),
-    isCompleted: generateRandomBoolean(),
-  },
-  {
-    id: v4(),
-    title: 'Play Dark Souls for 20 hours',
-    priority: generateRandomPriority(),
-    creationDate: generateRandomDate(),
-    isCompleted: generateRandomBoolean(),
-  },
-  {
-    id: v4(),
-    title: 'Feed the dog',
-    priority: generateRandomPriority(),
-    creationDate: generateRandomDate(),
-    isCompleted: generateRandomBoolean(),
-  },
-  {
-    id: v4(),
-    title: 'Go to my best friend birthday',
-    priority: generateRandomPriority(),
-    creationDate: generateRandomDate(),
-    isCompleted: generateRandomBoolean(),
-  },
-  {
-    id: v4(),
-    title: 'Fix the toilet',
-    priority: generateRandomPriority(),
-    creationDate: generateRandomDate(),
-    isCompleted: generateRandomBoolean(),
-  },
-  {
-    id: v4(),
-    title: 'Go running',
-    priority: generateRandomPriority(),
-    creationDate: generateRandomDate(),
-    isCompleted: generateRandomBoolean(),
-  },
-  {
-    id: v4(),
-    title: 'Return The Lord of the Rings to the public library',
-    priority: generateRandomPriority(),
-    creationDate: generateRandomDate(),
-    isCompleted: generateRandomBoolean(),
-  },
-];
-
+import { convertDateToMS } from './helpers/datesHandlers';
 // ----------------------------------------------------------------------
 
 export default function App() {
+  const [initialTaskList, setInitialTaskList] = useState([]);
   const [taskList, setTaskList] = useState([]);
   const [task, setTask] = useState({});
+  const [filter, setFilter] = useState(filters);
 
   useEffect(() => {
-    setTaskList(tasks);
+    setTaskList(generateTasks());
+    setInitialTaskList(generateTasks());
   }, []);
 
-  function handleChange(e) {
+  const updateTaskState = (e) => {
     const { name, value } = e.target;
 
-    // Check if value is a number. Convert it to a number if it is.
-    let setValue;
-    if (!isNaN(value)) {
-      setValue = Number(value);
-    } else {
-      setValue = value;
-    }
+    setTask({
+      ...task,
+      id: v4(),
+      [name]: !isNaN(value) ? Number(value) : value,
+    });
+  };
 
-    // We generate a new ID using uuid v4
-    const newId = v4();
-
-    setTask({ ...task, id: newId, [name]: setValue });
-  }
-
-  function handleSubmit(e) {
+  const submitNewTask = (e) => {
     e.preventDefault();
 
-    const defaultStatus = false; //set a default task status
-    const creationDate = new Date().toISOString();
-    const newTask = { ...task, isCompleted: defaultStatus, creationDate };
-    //console.log(newTask);
-    setTaskList([...taskList, newTask]);
-
-    //Reset form
-    e.target.reset();
+    setTaskList([
+      ...taskList,
+      { ...task, isCompleted: false, creationDate: new Date().toISOString() },
+    ]);
+    e.target.reset(); //TODO check if OP
     setTask({});
-  }
+    setFilter(filters);
+  };
 
-  function handleDelete(id) {
-    const filteredList = taskList.filter((task) => task.id !== id);
+  const deleteSelectedTask = (id) => {
+    setTaskList(taskList.filter((task) => task.id !== id));
+  };
 
-    setTaskList(filteredList);
-  }
-
-  function handleUpdate(id) {
+  const updateSelectedTask = (id) => {
     const updatedTask = taskList.find((task) => task.id === id);
     const updatedStatus = !updatedTask.isCompleted;
     updatedTask.isCompleted = updatedStatus;
 
     setTaskList([...taskList]);
-  }
+  };
+
+  const handleFilterUpdate = (e) => {
+    const { name, value, type } = e.target;
+
+    setFilter({
+      ...filter,
+      [name]: type === 'checkbox' ? e.target.checked : value,
+    });
+  };
+
+  const handleFilterSubmit = (e) => {
+    e.preventDefault();
+
+    const { title, priority, lateness, isCompleted, minDate, maxDate } = filter;
+
+    // Check if all inputs are empty, abort the function if it is
+    if (
+      !title &&
+      !priority &&
+      !lateness &&
+      !isCompleted &&
+      !minDate &&
+      !maxDate
+    )
+      return;
+
+    // Unecessary comment for prod (explaination):
+    // For this filter, we will create a filtered list to allow filter accumulation, based on the initialTaskList and not the taskList.
+    // Everytime we need to look for a value, we search it through the initialTaskList, that way, we avoid reducing the result every time we search for something
+    // Because each filter handles different data format, we check one by one the filters
+    // Everytime we activate a new filter, we "add" it to the filteredList.
+
+    let filteredList = initialTaskList;
+
+    if (title) {
+      filteredList = filteredList.filter((task) => {
+        return task.title.toLowerCase().includes(title.toLowerCase());
+      });
+    }
+
+    if (priority) {
+      filteredList = filteredList.filter((task) => {
+        return task.priority === +priority;
+      });
+    }
+
+    if (lateness) {
+      filteredList = filteredList.filter((task) => {
+        const todaytoMs = convertDateToMS();
+        const creationDateToMS = convertDateToMS(task.creationDate);
+
+        let condition;
+        if (lateness === 'finished') condition = creationDateToMS > todaytoMs;
+        if (lateness === 'pending') condition = creationDateToMS <= todaytoMs;
+        return condition;
+      });
+    }
+    if (minDate && maxDate) {
+      filteredList = filteredList.filter((task) => {
+        const creationDateToMS = convertDateToMS(task.creationDate);
+        const minDateToMS = convertDateToMS(minDate);
+        const maxDateToMS = convertDateToMS(maxDate);
+
+        return (
+          creationDateToMS >= minDateToMS && creationDateToMS <= maxDateToMS
+        );
+      });
+    }
+
+    if (typeof isCompleted === 'boolean') {
+      filteredList = filteredList.filter((task) => {
+        return task.isCompleted === isCompleted;
+      });
+    }
+
+    setTaskList(filteredList);
+  };
+
+  const resetFilters = (e) => {
+    e.preventDefault();
+    setFilter(filters); //reset filters
+    setTaskList(initialTaskList); //reset taskList
+  };
 
   return (
     <>
       <div>
-        <h1>A page title</h1>
+        <h1>I am ugly (for now...)</h1>
       </div>
+      <hr />
       <div>
         <h2>Add a new task</h2>
-        <AddNewTask handleChange={handleChange} handleSubmit={handleSubmit} />
+        <AddNewTask
+          updateTaskState={updateTaskState}
+          submitNewTask={submitNewTask}
+        />
       </div>
+      <hr />
+      <div>
+        <h2>🔍 Search for a task</h2>
+        <Filter
+          handleFilterUpdate={handleFilterUpdate}
+          handleFilterSubmit={handleFilterSubmit}
+          resetFilters={resetFilters}
+          filter={filter}
+        />
+      </div>
+      <hr />
       <div>
         <h2>⌛ Pending tasks</h2>
         <TaskList
           taskList={taskList}
           isCompleted={false}
-          handleDelete={handleDelete}
-          handleUpdate={handleUpdate}
+          deleteSelectedTask={deleteSelectedTask}
+          updateSelectedTask={updateSelectedTask}
         />
       </div>
+      <hr />
       <div>
         <h2>✅ Completed tasks</h2>
         <TaskList
           taskList={taskList}
           isCompleted={true}
-          handleDelete={handleDelete}
-          handleUpdate={handleUpdate}
+          deleteSelectedTask={deleteSelectedTask}
+          updateSelectedTask={updateSelectedTask}
         />
       </div>
     </>

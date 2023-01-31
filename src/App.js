@@ -11,6 +11,14 @@ import { filters } from './data/filters';
 import { useEffect, useState } from 'react';
 import { v4 } from 'uuid';
 import { convertDateToMS } from './helpers/datesHandlers';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  Divider,
+  Typography,
+} from '@mui/material';
+import { Container } from '@mui/system';
 // ----------------------------------------------------------------------
 
 export default function App() {
@@ -143,47 +151,57 @@ export default function App() {
 
   return (
     <>
-      <div>
-        <h1>I am ugly (for now...)</h1>
-      </div>
-      <hr />
-      <div>
-        <h2>Add a new task</h2>
-        <AddNewTask
-          updateTaskState={updateTaskState}
-          submitNewTask={submitNewTask}
-        />
-      </div>
-      <hr />
-      <div>
-        <h2>🔍 Search for a task</h2>
-        <Filter
-          handleFilterUpdate={handleFilterUpdate}
-          handleFilterSubmit={handleFilterSubmit}
-          resetFilters={resetFilters}
-          filter={filter}
-        />
-      </div>
-      <hr />
-      <div>
-        <h2>⌛ Pending tasks</h2>
-        <TaskList
-          taskList={taskList}
-          isCompleted={false}
-          deleteSelectedTask={deleteSelectedTask}
-          updateSelectedTask={updateSelectedTask}
-        />
-      </div>
-      <hr />
-      <div>
-        <h2>✅ Completed tasks</h2>
-        <TaskList
-          taskList={taskList}
-          isCompleted={true}
-          deleteSelectedTask={deleteSelectedTask}
-          updateSelectedTask={updateSelectedTask}
-        />
-      </div>
+      <Container>
+        <div>
+          <Typography variant="h1">Page title</Typography>
+        </div>
+        <Card>
+          <CardContent>
+            <CardHeader title="Add a new task" />
+            <Divider />
+            <AddNewTask
+              updateTaskState={updateTaskState}
+              submitNewTask={submitNewTask}
+            />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader title="Search for a task" />
+          <Divider />
+          <CardContent>
+            <Filter
+              handleFilterUpdate={handleFilterUpdate}
+              handleFilterSubmit={handleFilterSubmit}
+              resetFilters={resetFilters}
+              filter={filter}
+            />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader title="Pending tasks" />
+          <Divider />
+          <CardContent>
+            <TaskList
+              taskList={taskList}
+              isCompleted={false}
+              deleteSelectedTask={deleteSelectedTask}
+              updateSelectedTask={updateSelectedTask}
+            />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader title="Completed tasks" />
+          <Divider />
+          <CardContent>
+            <TaskList
+              taskList={taskList}
+              isCompleted={true}
+              deleteSelectedTask={deleteSelectedTask}
+              updateSelectedTask={updateSelectedTask}
+            />
+          </CardContent>
+        </Card>
+      </Container>
     </>
   );
 }

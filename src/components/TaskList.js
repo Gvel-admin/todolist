@@ -1,3 +1,16 @@
+import {
+  Alert,
+  Checkbox,
+  Chip,
+  IconButton,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  Typography,
+} from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { useMemo } from 'react';
 import { convertDateToMS } from '../helpers/datesHandlers';
 import { formatDate } from '../helpers/formaters';
@@ -41,59 +54,70 @@ export default function TaskList(props) {
 
   return (
     <>
-      <table>
-        <thead>
-          <tr>
+      <Table>
+        <TableHead>
+          <TableRow>
             {tableHeaders.map((tableHeader, id) => (
-              <th key={id}>{tableHeader}</th>
+              <TableCell key={id}>{tableHeader}</TableCell>
             ))}
-          </tr>
-        </thead>
-        <tbody>
+          </TableRow>
+        </TableHead>
+        <TableBody>
           {dedicatedTaskList.length > 0 ? (
             dedicatedTaskList.map((task) => {
               const { id, title, priority, isCompleted, creationDate } = task;
               return (
-                <tr key={id}>
-                  <td style={{ cursor: 'auto' }}>{title}</td>
-                  <td>
-                    <span
+                <TableRow key={id}>
+                  <TableCell>
+                    <Typography variant="span" fontWeight={'bold'}>
+                      {title}
+                    </Typography>
+                  </TableCell>
+                  <TableCell>
+                    <Chip
+                      size="small"
+                      label={getPriority(priority)}
                       className={`priority priority-${getPriority(
                         priority
                       ).toLowerCase()}`}
-                    >
-                      {getPriority(priority)}
-                    </span>
-                  </td>
-                  <td>{formatDate(creationDate)}</td>
-                  <td>{getLateness(creationDate)}</td>
-                  <td>
-                    <input
-                      type="checkbox"
+                    />
+                  </TableCell>
+                  <TableCell>{formatDate(creationDate)}</TableCell>
+                  <TableCell>
+                    <Chip label={getLateness(creationDate)} size="small" />
+                  </TableCell>
+                  <TableCell>
+                    <Checkbox
                       name="isComplete"
                       checked={isCompleted}
                       onChange={() => updateSelectedTask(id)}
-                      style={{ cursor: 'pointer' }}
                     />
-                  </td>
-                  <td>
-                    <button
+                  </TableCell>
+                  <TableCell>
+                    <IconButton
+                      aria-label="delete"
                       onClick={() => deleteSelectedTask(id)}
                       style={{ cursor: 'pointer' }}
                     >
-                      x
-                    </button>
-                  </td>
-                </tr>
+                      <DeleteIcon />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
               );
             })
           ) : (
-            <tr>
-              <td>No task</td>
-            </tr>
+            <TableRow>
+              <TableCell
+                colSpan={tableHeaders.length}
+                sx={{ border: 0 }}
+                align="center"
+              >
+                <Alert severity="info">No task</Alert>
+              </TableCell>
+            </TableRow>
           )}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
     </>
   );
 }

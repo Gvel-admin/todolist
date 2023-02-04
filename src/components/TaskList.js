@@ -32,10 +32,12 @@ const tableHeaders = [
   'Delete',
 ];
 
-export default function TaskList(props) {
-  const { taskList, deleteSelectedTask, updateSelectedTask, isCompleted } =
-    props;
-
+export default function TaskList({
+  taskList,
+  deleteSelectedTask,
+  updateSelectedTask,
+  isCompleted,
+}) {
   const getPriority = (priorityId) => priorityMap[priorityId] || '-';
 
   const getLateness = useMemo(
@@ -54,7 +56,7 @@ export default function TaskList(props) {
 
   return (
     <>
-      <Table>
+      <Table size="small">
         <TableHead>
           <TableRow>
             {tableHeaders.map((tableHeader, id) => (

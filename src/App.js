@@ -37,7 +37,6 @@ export default function App() {
 
     setTask({
       ...task,
-      id: v4(),
       [name]: !isNaN(value) ? Number(value) : value,
     });
   };
@@ -45,9 +44,16 @@ export default function App() {
   const submitNewTask = (e) => {
     e.preventDefault();
 
+    if (!task.title && task.priority) return;
+
     setTaskList([
       ...taskList,
-      { ...task, isCompleted: false, creationDate: new Date().toISOString() },
+      {
+        id: v4(),
+        ...task,
+        isCompleted: false,
+        creationDate: new Date().toISOString(),
+      },
     ]);
     e.target.reset(); //TODO check if OP
     setTask({});
